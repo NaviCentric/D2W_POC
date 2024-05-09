@@ -696,14 +696,14 @@
 {'tag': 'p', 'type': 'text', 'text': 'o'}
 {'tag': 'p', 'type': 'text', 'text': 'k'}
 {'tag': 'p', 'type': 'text', 'text': ' '}
-{'tag': 'p', 'type': 'underline', 'text': 'c'}
-{'tag': 'p', 'type': 'underline', 'text': 'o'}
-{'tag': 'p', 'type': 'underline', 'text': 'n'}
-{'tag': 'p', 'type': 'underline', 'text': 't'}
-{'tag': 'p', 'type': 'underline', 'text': 'a'}
-{'tag': 'p', 'type': 'underline', 'text': 'i'}
-{'tag': 'p', 'type': 'underline', 'text': 'n'}
-{'tag': 'p', 'type': 'underline', 'text': 's'}
+{'tag': 'p', 'type': 'text', 'text': 'c'}
+{'tag': 'p', 'type': 'text', 'text': 'o'}
+{'tag': 'p', 'type': 'text', 'text': 'n'}
+{'tag': 'p', 'type': 'text', 'text': 't'}
+{'tag': 'p', 'type': 'text', 'text': 'a'}
+{'tag': 'p', 'type': 'text', 'text': 'i'}
+{'tag': 'p', 'type': 'text', 'text': 'n'}
+{'tag': 'p', 'type': 'text', 'text': 's'}
 {'tag': 'p', 'type': 'text', 'text': ' '}
 {'tag': 'p', 'type': 'text', 'text': 't'}
 {'tag': 'p', 'type': 'text', 'text': 'h'}
