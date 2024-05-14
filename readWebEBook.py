@@ -1,8 +1,38 @@
 import requests
 from bs4 import BeautifulSoup
 
+def appendSegment(index, text_segments , child):
+     if(index == 0 and "-  " in child.get_text()):
+         child_text = child.get_text().lstrip("-  ")
+     elif(index == 0):
+         child_text = child.get_text().lstrip()
+     else:
+         child_text = child.get_text()
 
-def process_list():
+     if isinstance(child, str):
+        text_segments.append({"type": "text", "text": child_text})
+     elif child.name == 'strong':
+        text_segments.append({"type": "bold", "text": child_text})
+     elif child.name == 'em':
+        text_segments.append({"type": "italic", "text": child_text})
+     elif child.name == 'span':
+        text_segments.append({"type": "tooltip", "text": child_text})
+     elif child.name == 's':
+        text_segments.append({"type": "strikeThrough", "text": child_text})
+     elif child.name == 'u':
+            text_segments.append({"type": "underline", "text": child_text})
+     elif child.name == 'a':
+            text_segments.append({"type": "link", "text": child_text})
+     elif child.name == 'data':
+            if hasattr(child, 'children'):
+              for index, grand_child in enumerate(child.children):
+                appendSegment(index, text_segments , grand_child)
+
+            else:
+                text_segments.append({"type": "text", "text": child_text})
+
+
+def process_list(segment_id):
         
     url = 'https://us-central1-ifac-digital-standards-pub.cloudfunctions.net/getDownloadURL'
     headers = {
@@ -44,18 +74,15 @@ def process_list():
     if response.status_code == 200:
         json_data = response.json()
 
-        
-        id_to_find = "MASTER_1"  # The id value you want to find
         content = None
         
         for result in json_data["result"]:
             for handbook in result["handbook"]:
                 for item in handbook:
-                    if item["id"] == id_to_find:
+                    if item["id"] == segment_id:
                         content = item["content"]
                         break
 
-            # Output
         # if content:
         #     print("Content for ID", id_to_find, ":", content)
         # else:
@@ -71,31 +98,24 @@ def process_list():
             if(element.name=='p'):
                 text_segments = []
                 for index, child in enumerate(element.children):
-                    if(index == 0 and "-  " in child.get_text()):
-                            child_text = child.get_text().lstrip("-  ")
-                    else:
-                            child_text = child.get_text()
-
-                    if isinstance(child, str):
-                        text_segments.append({"type": "text", "text": child_text})
-                    elif child.name == 'strong':
-                        text_segments.append({"type": "bold", "text": child_text})
-                    elif child.name == 'em':
-                        text_segments.append({"type": "italic", "text": child_text})
-                    elif child.name == 'span':
-                        text_segments.append({"type": "tooltip", "text": child_text})
-                    elif child.name == 's':
-                        text_segments.append({"type": "strikeThrough", "text": child_text})
-                    elif child.name == 'u':
-                            text_segments.append({"type": "underline", "text": child_text})
-                    elif child.name == 'a':
-                            text_segments.append({"type": "link", "text": child_text})
-                
+                    appendSegment(index,text_segments , child)
                 content_list.append({
                     "tag": "p",
                     "id": element['id'],
                     "text": text_segments
                 })
+
+            elif (element.name=='div'):
+                if not ("id" in element.attrs and element.attrs["id"] == segment_id):
+                    text_segments = []
+                    for index, child in enumerate(element.children):
+                        appendSegment(index,text_segments , child)
+                    content_list.append({
+                        "tag": "p",
+                        # "id": child['id'],
+                        "text": text_segments
+                })
+
 
             elif (element.name=='ul'):
                 li_tags = element.find_all('li')
@@ -104,25 +124,8 @@ def process_list():
                     text_segments = []
                     # print(li_tag.text)
                     for index, child in enumerate(li_tag.children):
-                        if(index == 0):
-                            child_text = child.get_text().lstrip()
-                        else:
-                            child_text = child.get_text()
+                        appendSegment(index,text_segments , child)
 
-                        if isinstance(child, str):
-                            text_segments.append({"type": "text", "text": child_text})
-                        elif child.name == 'strong':
-                            text_segments.append({"type": "bold", "text": child_text})
-                        elif child.name == 'em':
-                            text_segments.append({"type": "italic", "text": child_text})
-                        elif child.name == 'span':
-                            text_segments.append({"type": "tooltip", "text": child_text})
-                        elif child.name == 's':
-                            text_segments.append({"type": "strikeThrough", "text": child_text})
-                        elif child.name == 'u':
-                            text_segments.append({"type": "underline", "text": child_text})
-                        elif child.name == 'a':
-                            text_segments.append({"type": "link", "text": child_text})
                     li_contents.append({
                     "tag": "li",
                     "id": li_tag['id'],
@@ -147,7 +150,7 @@ def process_list():
                         if(char != "\xa0"):
                             transformed_list.append({
                                 "tag": item['tag'],
-                                "id": item['id'],
+                                "id": item.get('id',"default_id"),
                                 "type": text_item['type'],
                                 "text": char
                             })

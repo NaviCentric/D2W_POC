@@ -2,7 +2,10 @@ import readWebEBook
 import readWordFile
 
 wordFileList = readWordFile.read_docx_with_formatting("C:\RnD\DocReactPOC\docTestNew.docx");
-webEbookList = readWebEBook.process_list();
+
+
+# wordFileList = readWordFile.read_docx_with_formatting("C:\RnD\DocReactPOC\A005 2021 Preface to the I.docx");
+webEbookList = readWebEBook.process_list("MASTER_1");
 
 print("Char length of the word file list:", len(wordFileList));
 print("Char length of the web ebook file list:", len(webEbookList));
@@ -29,4 +32,4 @@ for index, item1 in enumerate(webEbookList):
         print(f"Text at char at index {index} is different: web e book-{item1['text']} != word file-{item2['text']}")
         # my_list = [779, 1014, 3575, 3864, 4556] # bypassed 's
         # if(index not in my_list):
-        #break
+        # break

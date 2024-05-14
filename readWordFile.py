@@ -1,6 +1,18 @@
 from docx import Document
 import json
 
+def evaludateText_Segment(paragraph, text_segments):
+     for run in paragraph.runs:
+        if run.bold or run.font.element.style=='csbl' or run._parent.style.name == 'Heading 1' or run._parent.style.name == 'Heading 2':
+            text_segments.append({"type": "bold", "text": run.text})
+        elif run.italic or run.font.element.style=='Italic' or run.font.element.style=='csItl':
+            text_segments.append({"type": "italic", "text": run.text})
+        elif run.font.strike:
+            text_segments.append({"type": "strikeThrough", "text": run.text})
+        elif run.underline:
+            text_segments.append({"type": "underline", "text": run.text})
+        else:
+            text_segments.append({"type": "text", "text": run.text}) 
 
 def read_docx_with_formatting(file_path):
     doc = Document(file_path)
@@ -22,38 +34,15 @@ def read_docx_with_formatting(file_path):
         
         if("Bullet" in paragraph.style.name or nested_li=="true"):
             text_segments = []
-            for run in paragraph.runs:
-                    if run.bold or run.font.element.style=='csbl':
-                        text_segments.append({"type": "bold", "text": run.text})
-                    elif run.italic or run.font.element.style=='Italic' or run.font.element.style=='csItl':
-                        text_segments.append({"type": "italic", "text": run.text})
-                    elif run.font.strike:
-                        text_segments.append({"type": "strikeThrough", "text": run.text})
-                    elif run.underline:
-                        text_segments.append({"type": "underline", "text": run.text})
-                    else:
-                        text_segments.append({"type": "text", "text": run.text}) 
-
+            evaludateText_Segment(paragraph , text_segments)
             content_list.append({
                     "tag": "li",
                     "text": text_segments
                 })
             
-    
         else:
             text_segments = []
-            for run in paragraph.runs:
-                    if run.bold or run.font.element.style=='csbl':
-                        text_segments.append({"type": "bold", "text": run.text})
-                    elif run.italic or run.font.element.style=='Italic' or run.font.element.style=='csItl':
-                        text_segments.append({"type": "italic", "text": run.text})
-                    elif run.font.strike:
-                        text_segments.append({"type": "strikeThrough", "text": run.text})
-                    elif run.underline:
-                        text_segments.append({"type": "underline", "text": run.text})
-                    else:
-                        text_segments.append({"type": "text", "text": run.text})  
-
+            evaludateText_Segment(paragraph , text_segments)
             content_list.append({
                     "tag": "p",
                     "text": text_segments
