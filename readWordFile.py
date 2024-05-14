@@ -3,7 +3,7 @@ import json
 
 def evaludateText_Segment(paragraph, text_segments):
      for run in paragraph.runs:
-        if run.bold or run.font.element.style=='csbl' or run._parent.style.name == 'Heading 1' or run._parent.style.name == 'Heading 2':
+        if run.bold or run.font.element.style=='csbl' or 'Heading' in run._parent.style.name or run._parent.style.name == 'Heading 1' or run._parent.style.name == 'Heading 2' or run._parent.style.name == 'Heading 3 (Stacked)':
             text_segments.append({"type": "bold", "text": run.text})
         elif run.italic or run.font.element.style=='Italic' or run.font.element.style=='csItl':
             text_segments.append({"type": "italic", "text": run.text})

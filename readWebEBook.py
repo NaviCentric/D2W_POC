@@ -1,10 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 
-def appendSegment(index, text_segments , child):
+def appendSegment(index, text_segments , child,tag):
      if(index == 0 and "-  " in child.get_text()):
          child_text = child.get_text().lstrip("-  ")
-     elif(index == 0):
+     elif(index == 0 and tag == 'ul'):
          child_text = child.get_text().lstrip()
      else:
          child_text = child.get_text()
@@ -26,7 +26,7 @@ def appendSegment(index, text_segments , child):
      elif child.name == 'data':
             if hasattr(child, 'children'):
               for index, grand_child in enumerate(child.children):
-                appendSegment(index, text_segments , grand_child)
+                appendSegment(index, text_segments , grand_child, tag)
 
             else:
                 text_segments.append({"type": "text", "text": child_text})
@@ -97,8 +97,12 @@ def process_list(segment_id):
             # print(element.name)
             if(element.name=='p'):
                 text_segments = []
+
+                if("class" in element.attrs and element.attrs["class"][0]=='level-1'):
+                     text_segments.append({"type": "text", "text": "\t"})
+
                 for index, child in enumerate(element.children):
-                    appendSegment(index,text_segments , child)
+                    appendSegment(index,text_segments , child,'p')
                 content_list.append({
                     "tag": "p",
                     "id": element['id'],
@@ -109,7 +113,7 @@ def process_list(segment_id):
                 if not ("id" in element.attrs and element.attrs["id"] == segment_id):
                     text_segments = []
                     for index, child in enumerate(element.children):
-                        appendSegment(index,text_segments , child)
+                        appendSegment(index,text_segments , child,'div')
                     content_list.append({
                         "tag": "p",
                         # "id": child['id'],
@@ -124,7 +128,7 @@ def process_list(segment_id):
                     text_segments = []
                     # print(li_tag.text)
                     for index, child in enumerate(li_tag.children):
-                        appendSegment(index,text_segments , child)
+                        appendSegment(index,text_segments , child,'ul')
 
                     li_contents.append({
                     "tag": "li",
